@@ -29,7 +29,7 @@ pip install scikit-image matplotlib numpy gym Pillow opencv-python tensorflow pe
 
 2. Adjust hyperparameters: Suggested hyperparameters would be a population= 200 and max_rounds= 500, however this requires a substantial amount of computing power and memory and we were only able to use a population of size 3 for 3 rounds.
 
-3.  name the model by changing the global name variable.
+3.  name the model by changing the global `name` variable.
 
 4. Run the script using Python:
 

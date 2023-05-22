@@ -55,5 +55,5 @@ The script contains the following main components:
 
 - Training Progress Visualization: After the genetic programming process is completed, the script plots a graph showing the training progression, displaying the best score achieved in each generation.
 
-- Model Saving: The evolved model is saved as final_model_"name".h5
+- Model Saving: The evolved model is saved as final_model_`name`.h5
 

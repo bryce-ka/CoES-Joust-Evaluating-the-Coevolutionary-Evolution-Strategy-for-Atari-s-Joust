@@ -61,10 +61,6 @@ def player_stack(player):
     else:
         stack = np.dstack((standardize_img(frame_stack[0]), standardize_img(frame_stack[1]), standardize_img(frame_stack[2]), standardize_img(frame_stack[3]), other_p, active_p))
     stack = np.array([stack])
-    # if(flag < 1):
-    #     np.save("origin", stack)
-    #     # vbn = new VBN('origin.txt', name, epsilon=1e-5)
-    # flag = 1  
     return stack 
 
 
@@ -72,13 +68,9 @@ def playGame1():
     stack_count = 0
     frame_count = 0
     score = 0
-    # print("agent1 actions", end = ": ")
     for agent in env.agent_iter():
         observation, reward, termination, truncation, info = env.last()
-        # obs = np.reshape(observation, (210,160))
         obs = cv2.resize(observation, (84,84))
-        # plt.imshow(obs)
-        # plt.savefig("123.png")
         if (stack_count % 4 == 0) or (stack_count % 4 == 1):
             #save pixel wise maximum of 2 frames into array 
             if (stack_count % 4 == 0):
@@ -91,35 +83,21 @@ def playGame1():
                 frame_count +=1
                 #and add to array 
                 if frame_count>4:
-                    # print("1.", len(frame_stack), frame_count)
                     frame_stack.pop(0)
-
-                #stack images 
-                # top = np.hstack((frame_stack[0], frame_stack[1]))
-                # bottom = np.hstack((frame_stack[2], frame_stack[3]))
-                # stacked = np.vstack((top, bottom))
         if frame_count < 4:
             action = None if termination or truncation else env.action_space(agent).sample()  # this is where you would insert your policy
             env.step(action)
-            # print(action)
         else:
             print(len(frame_stack))
             if agent == 'first_0':
                 stack = player_stack(1)
                 action = None if termination or truncation else np.argmax(model1.predict(stack))# this is where you would insert your policy
-                # print(action, end = " ")
                 env.step(action)
-                # print(action)
             if agent == 'second_0':
                 stack = player_stack(2)
                 action = None if termination or truncation else np.argmax(model2.predict(stack))  # this is where you would insert your policy
-                env.step(action)
-
-                # print(action)
-        # VISUAL SCOREBOARD        
-        score+=reward
-        clear_output(wait=True)
-        # print(score)      
+                env.step(action)   
+        score+=reward    
         stack_count += 1
     env.close()
     
@@ -129,13 +107,9 @@ def playGame2():
     stack_count = 0
     frame_count = 0
     score = 0
-
     for agent in env.agent_iter():
         observation, reward, termination, truncation, info = env.last()
-        # obs = np.reshape(observation, (210,160))
         obs = cv2.resize(observation, (84,84))
-        # plt.imshow(obs)
-        # plt.savefig("123.png")
         if (stack_count % 4 == 0) or (stack_count % 4 == 1):
             #save pixel wise maximum of 2 frames into array 
             if (stack_count % 4 == 0):
@@ -147,54 +121,33 @@ def playGame2():
                 frame_count +=1
                 #and add to array 
                 if frame_count>4:
-                    # print("1.", len(frame_stack), frame_count)
                     frame_stack.pop(0)
-            
-
-                #stack images 
-                # top = np.hstack((frame_stack[0], frame_stack[1]))
-                # bottom = np.hstack((frame_stack[2], frame_stack[3]))
-                # stacked = np.vstack((top, bottom))
         if frame_count < 4:
             action = None if termination or truncation else env.action_space(agent).sample()  # this is where you would insert your policy
             env.step(action)
-            # print(action)
         else:
-            # print(len(frame_stack), frame_count)
             if agent == 'first_0':
                 stack = player_stack(2)
                 action = None if termination or truncation else np.argmax(model1.predict(stack))# this is where you would insert your policy
-                # print("action: ", action)
                 env.step(action)
-                # print(action)
             if agent == 'second_0':
                 stack = player_stack(1)
                 action = None if termination or truncation else np.argmax(model2.predict(stack))  # this is where you would insert your policy
-                # print("action: ", action)
-                env.step(action)
-
-                # print(action)
-        # VISUAL SCOREBOARD        
-        score+=reward
-        clear_output(wait=True)
-        # print(score)        
+                env.step(action)     
+        score+=reward  
         stack_count += 1
     env.close()
     
     return score   
 
 def generate_random(model):
-    # print(model2.get_weights())
     for l in range(len(model2.layers)):
-        # print('hi',len(model2.layers))
         if(l == len(model2.layers)-2):
             continue
         w = model2.layers[l].get_weights()
-        # print(l, tf.shape(w[0]), model2.layers[l])
         n1 = np.random.normal(0, 1, tf.shape(w[0]))
         n2 = np.random.normal(0,1, tf.shape(w[1]))
         model.layers[l].set_weights([n1, n2])
-    # print(model2.get_weights())
     return model.get_weights()
 
 def mutate():
@@ -207,8 +160,7 @@ def mutate():
         k = np.add(model1.layers[l].weights[0], (np.full_like(w[0], noise) * w[0]))
         b = np.add(model1.layers[l].weights[1], (np.full_like(w[1], noise) * w[1]))
         model2.layers[l].set_weights([k, b])
-    # print(model2.get_weights())
-    # return model2.get_weights()
+
     
     
 def get_next_policy(scores, cur_policy, cur_max, cur_min):
